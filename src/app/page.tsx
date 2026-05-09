@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function LandingPage() {
   return (
@@ -13,9 +14,9 @@ export default function LandingPage() {
             </div>
             <span className="font-montserrat font-bold text-2xl text-secondary tracking-tight">Canopy</span>
           </div>
-          <button className="bg-primary text-white font-montserrat font-semibold px-6 py-2.5 rounded-md hover:bg-[#1E8449] transition-all shadow-[0px_4px_12px_rgba(39,174,96,0.3)]">
+          <Link href="/login" className="bg-primary text-white font-montserrat font-semibold px-6 py-2.5 rounded-md hover:bg-[#1E8449] transition-all shadow-[0px_4px_12px_rgba(39,174,96,0.3)]">
             Acceder
-          </button>
+          </Link>
         </div>
       </nav>
 
@@ -40,9 +41,9 @@ export default function LandingPage() {
               Los clientes no cancelan de un día para otro. Se desconectan poco a poco en silencio. Canopy detecta esas sutiles caídas de engagement antes de que sea tarde.
             </p>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <button className="bg-primary text-white font-montserrat font-semibold px-8 py-4 rounded-md hover:bg-[#1E8449] transition-all shadow-lg shadow-primary/30 text-lg w-full sm:w-auto">
+              <Link href="/register" className="text-center bg-primary text-white font-montserrat font-semibold px-8 py-4 rounded-md hover:bg-[#1E8449] transition-all shadow-lg shadow-primary/30 text-lg w-full sm:w-auto">
                 Empezar a Retener
-              </button>
+              </Link>
               <button className="px-8 py-4 rounded-md font-montserrat font-semibold text-secondary border border-border hover:bg-surface transition-all w-full sm:w-auto">
                 Ver Demo
               </button>
@@ -263,9 +264,9 @@ export default function LandingPage() {
             <span className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-primary"></span>Retiene.</span>
           </div>
 
-          <button className="mt-16 bg-primary text-white font-montserrat font-semibold px-8 py-4 rounded-md hover:bg-[#1E8449] transition-all shadow-lg text-lg">
+          <Link href="/register" className="inline-block mt-16 bg-primary text-white font-montserrat font-semibold px-8 py-4 rounded-md hover:bg-[#1E8449] transition-all shadow-lg text-lg">
             Empieza a escuchar las señales
-          </button>
+          </Link>
         </div>
       </section>
       
