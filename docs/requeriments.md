@@ -46,11 +46,19 @@ etapa_ciclo: Enum (Onboarding, Adopción, Renovación)
 
 dias_para_renovacion: Integer
 
-health_score_actual: Integer (0-100)
+Health_Score (Registro evolutivo de la salud)
 
-health_score_historico: JSON/Array (Últimos 6 períodos)
+id: UUID
+
+cliente_id: UUID (FK)
+
+fecha_registro: Timestamp (Default: now())
+
+score: Integer (0-100)
 
 estado_salud: Enum (Verde, Amarillo, Rojo, Crítico)
+
+factores_clave: JSON (Opcional, para guardar detalles que justifican el score en esa fecha)
 
 Contacto (Mapa de stakeholders del Cliente)
 
@@ -72,6 +80,8 @@ id: UUID
 
 cliente_id: UUID (FK)
 
+fecha_creacion: Timestamp (Default: now())
+
 tipo: Enum (Uso, Soporte, Facturación, Comercial)
 
 descripcion: String
@@ -83,6 +93,8 @@ Alerta_Intervencion (Acciones generadas por Canopy)
 id: UUID
 
 cliente_id: UUID (FK)
+
+fecha_creacion: Timestamp (Default: now())
 
 linea_deteccion: Enum (Línea 1 - Tendencia, Línea 2 - Crítica)
 
@@ -106,13 +118,13 @@ Componente 1: Clasificador y Generador de Alertas (Motor Lógico)
 
 Este componente no usa IA generativa, se basa en reglas deterministas (If/Then) para ser ultrarrápido y predecible.
 
-RF1.1 - Ingesta Simulada (Generación de Dummies en Supabase): Cada vez que un usuario se registre en la plataforma, el sistema debe ejecutar una función de inyección de datos (seeding) en Supabase. Esto creará automáticamente su entorno de demostración con 8 clientes preconfigurados narrativamente (Ej: Cliente 1 saludable, Cliente 5 con Campeón ausente, Cliente 7 con fallo de pago), junto con sus respectivos contactos, señales y registros de alertas base.
+RF1.1 - Ingesta Simulada (Generación de Dummies en Supabase): Cada vez que un usuario se registre en la plataforma, el sistema debe ejecutar una función de inyección de datos (seeding) en Supabase. Esto creará automáticamente su entorno de demostración con 8 clientes preconfigurados narrativamente, inyectando también un set de datos históricos falsos en la tabla Historial_Health_Score para simular que el sistema ha estado monitoreando la cuenta por semanas.
 
 RF1.2 - Ejecución a Demanda: Debe existir un botón oculto o específico para el demo ("Ejecutar Análisis") que dispare el motor de detección en tiempo real para leer los datos recién inyectados en Supabase, en lugar de usar cron jobs.
 
-RF1.3 - Detección Línea 1 (Tendencias): El algoritmo debe clasificar a un cliente en Línea 1 si su health_score cae >10 puntos en el histórico o entra en zona roja por primera vez.
+RF1.3 - Detección Línea 1 (Tendencias): El algoritmo debe consultar la tabla Historial_Health_Score (ordenada por fecha) y clasificar a un cliente en Línea 1 si su score más reciente cayó >10 puntos respecto a un registro de los últimos 7 días, o si el estado_salud entró en zona roja por primera vez en el historial.
 
-RF1.4 - Detección Línea 2 (Eventos Críticos): El algoritmo debe clasificar en Línea 2 (Prioridad Máxima) basándose en triggers exactos:
+RF1.4 - Detección Línea 2 (Eventos Críticos): El algoritmo debe clasificar en Línea 2 (Prioridad Máxima) basándose en triggers exactos en la tabla de Señales o Contactos:
 
 Mención de cancelación/competencia.
 
@@ -122,7 +134,7 @@ Campeón inactivo > 10 días o cambió de empresa.
 
 Fallo de pago reciente.
 
-RF1.5 - Motor de Health Score Estático: Calcular el score (0-100) basándose en pesos predefinidos, ajustado ligeramente por el tier del cliente en la base de datos.
+RF1.5 - Motor de Health Score Estático: Calcular el score (0-100) basándose en pesos predefinidos, ajustado ligeramente por el tier del cliente. Al ejecutarse, debe insertar una nueva fila en la tabla Historial_Health_Score en lugar de sobreescribir datos, creando así la línea de tiempo.
 
 Componente 2: Plataforma Web (Frontend Next.js)
 
@@ -134,7 +146,7 @@ RF2.2 - Dashboard de Vistas Duales:
 
 Vista Gerencial: Tarjetas de métricas globales (MRR en riesgo, clientes críticos, horas ahorradas estimadas).
 
-Vista Operativa (CS Rep): Lista de clientes extraída de Supabase, ordenados por urgencia y Health Score.
+Vista Operativa (CS Rep): Lista de clientes extraída de Supabase. El frontend debe consultar el registro más reciente en Historial_Health_Score para cada cliente y ordenarlos por urgencia.
 
 RF2.3 - Diferenciación Visual de Alertas: Los clientes marcados por la "Línea 2" deben tener un distintivo visual claro, urgente y predominante frente a los de la Línea 1.
 
@@ -146,7 +158,7 @@ Mensaje propuesto (editable).
 
 Botones de acción: Aprobar y Enviar, Editar, Descartar.
 
-RF2.5 - Temporizador SLA (Crítico para el Demo): Las alertas de Línea 2 deben mostrar un contador regresivo visible y en movimiento (ej. 45:00 minutos restantes) para generar sentido de urgencia en el demo.
+RF2.5 - Temporizador SLA (Crítico para el Demo): Las alertas de Línea 2 deben mostrar un contador regresivo visible y en movimiento (ej. 45:00 minutos restantes) para generar sentido de urgencia en el demo. El cálculo debe usar fecha_creacion y sla_vencimiento.
 
 RF2.6 - Routing Visual: Mostrar claramente a quién fue asignada la alerta (Ej: "Asignado a: CS Rep" o "Escalado a: Account Executive").
 
@@ -156,7 +168,7 @@ Componente 3: Agente IA (Toma de Decisiones y Respuestas)
 
 El corazón inteligente. Es la única integración real (API de Claude) y el núcleo del "efecto wow".
 
-RF3.1 - Prompt de Contexto Emocional: El sistema debe enviar la información del cliente consultada en Supabase hacia la API de Claude mediante un prompt fuertemente parametrizado.
+RF3.1 - Prompt de Contexto Emocional: El sistema debe enviar la información del cliente consultada en Supabase (incluyendo su tendencia extraída de Historial_Health_Score y las fechas de las últimas Señales) hacia la API de Claude mediante un prompt fuertemente parametrizado.
 
 RF3.2 - Estructuración de Respuesta (JSON): Claude debe devolver obligatoriamente un JSON con:
 
@@ -182,7 +194,7 @@ RF3.5 - Spinners de Carga Narrativos: Mientras se espera la respuesta de la API 
 
 3. Estrategia de Implementación para el Hackathon
 
-Script de Dummies Supabase (Día 1): Dedica tiempo a perfeccionar el archivo o función SQL/JS que inyectará los datos. Si el Cliente 5 de tu base de datos dummy tiene la historia correcta de "el campeón cambió de empresa", todo el flujo se demostrará sin esfuerzo en el frontend.
+Script de Dummies Supabase (Día 1): Dedica tiempo a perfeccionar el archivo o función SQL/JS que inyectará los datos. Si el Cliente 5 de tu base de datos dummy tiene la historia correcta de "el campeón cambió de empresa", todo el flujo se demostrará sin esfuerzo en el frontend. Presta especial atención a cargar el Historial_Health_Score y las Señales con fechas pasadas lógicas.
 
 Interfaz "Smoke & Mirrors" (Día 1-2): Construye la UI en Next.js usando Tailwind CSS con la guía de marca (Verdes corporativos, diseño limpio), conectando los estados de Supabase para que las interacciones se sientan "vivas".
 

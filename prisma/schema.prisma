@@ -9,14 +9,156 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+// Enums
+enum EmpresaTier {
+  ENTERPRISE
+  MID_MARKET
+  SMB
+}
+
+enum UsuarioRol {
+  CS_REP
+  CS_MANAGER
+  AE
+  VP
+}
+
+enum EtapaCiclo {
+  ONBOARDING
+  ADOPCION
+  RENOVACION
+}
+
+enum EstadoSalud {
+  VERDE
+  AMARILLO
+  ROJO
+  CRITICO
+}
+
+enum RolCuenta {
+  CAMPEON
+  COMPRADOR_ECONOMICO
+  USUARIO_REGULAR
+}
+
+enum EstadoContacto {
+  ACTIVO
+  NO_RESPONDE
+  CAMBIO_DE_EMPRESA
+}
+
+enum TipoSenal {
+  USO
+  SOPORTE
+  FACTURACION
+  COMERCIAL
+}
+
+enum LineaDeteccion {
+  LINEA_1
+  LINEA_2
+}
+
+enum TipoOutput {
+  A_REUNION
+  B_ASINCRONO
+  C_PRODUCTO
+}
+
+enum EstadoAlerta {
+  PENDIENTE
+  APROBADA
+  EDITADA
+  DESCARTADA
+}
+
+model Empresa {
+  id        String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nombre    String
+  industria String
+  tier      EmpresaTier
+
+  usuarios  Usuario[]
+  clientes  Cliente[]
+}
+
+model Usuario {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  empresa_id String     @db.Uuid
+  empresa    Empresa    @relation(fields: [empresa_id], references: [id])
+  nombre     String
+  rol        UsuarioRol
+  email      String     @unique
+
+  alertas    AlertaIntervencion[]
+}
+
+model Cliente {
+  id                   String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  empresa_id           String     @db.Uuid
+  empresa              Empresa    @relation(fields: [empresa_id], references: [id])
+  nombre               String
+  mrr                  Decimal
+  etapa_ciclo          EtapaCiclo
+  dias_para_renovacion Int
+
+  health_scores        HealthScore[]
+  contactos            Contacto[]
+  senales              Senal[]
+  alertas              AlertaIntervencion[]
+}
+
+model HealthScore {
+  id             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cliente_id     String      @db.Uuid
+  cliente        Cliente     @relation(fields: [cliente_id], references: [id])
+  fecha_registro DateTime    @default(now())
+  score          Int
+  estado_salud   EstadoSalud
+  factores_clave Json?
+
+  @@map("Health_Score")
+}
+
+model Contacto {
+  id             String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cliente_id     String         @db.Uuid
+  cliente        Cliente        @relation(fields: [cliente_id], references: [id])
+  nombre         String
+  rol_cuenta     RolCuenta
+  estado_actual  EstadoContacto
+  dias_sin_login Int
+}
+
+model Senal {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cliente_id     String    @db.Uuid
+  cliente        Cliente   @relation(fields: [cliente_id], references: [id])
+  fecha_creacion DateTime  @default(now())
+  tipo           TipoSenal
+  descripcion    String
+  es_critica     Boolean
+}
+
+model AlertaIntervencion {
+  id                String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  cliente_id        String         @db.Uuid
+  cliente           Cliente        @relation(fields: [cliente_id], references: [id])
+  fecha_creacion    DateTime       @default(now())
+  linea_deteccion   LineaDeteccion
+  emocion_detectada String
+  tipo_output       TipoOutput
+  mensaje_generado  String         @db.Text
+  nota_interna      String         @db.Text
+  estado            EstadoAlerta   @default(PENDIENTE)
+  sla_vencimiento   DateTime
+
+  asignado_a        String?        @db.Uuid
+  usuario           Usuario?       @relation(fields: [asignado_a], references: [id])
+
+  @@map("Alerta_Intervencion")
 }
