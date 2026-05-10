@@ -36,11 +36,11 @@ export function calcularDesgloseScore(
         puntos: PESOS.campeonNoResponde,
       });
     }
-    if (c.dias_sin_login > 7) {
-      penalizaciones.push({
-        motivo: `Campeón ${c.nombre} sin login ${c.dias_sin_login} días`,
-        puntos: PESOS.diasSinLoginCampeonPorDia * c.dias_sin_login,
-      });
+    else if (c.dias_sin_login > 7) {
+        penalizaciones.push({
+            motivo: `Campeón ${c.nombre} sin login ${c.dias_sin_login} días`,
+            puntos: PESOS.diasSinLoginCampeonPorDia * c.dias_sin_login,
+          });
     }
   }
 
