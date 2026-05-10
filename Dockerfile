@@ -33,4 +33,4 @@ ENV NEXT_TELEMETRY_DISABLED=1
 EXPOSE 3000
 
 # Sincroniza tablas desde el schema Prisma local (este repo no versiona migrations).
-CMD ["sh", "-c", "npx prisma db push --skip-generate && exec npm run start"]
+CMD ["sh", "-c", "npx prisma db push && exec npm run start"]

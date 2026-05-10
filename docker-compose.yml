@@ -1,54 +1,19 @@
-# Levantar: docker compose up --build -d    (desde esta carpeta).
-# Logs: docker compose logs -f web
-# Parar y borrar volumen Postgres: docker compose down -v
-#
-# Variables usadas desde el fichero .env del proyecto para el build (--build-arg vía Compose):
-#   NEXT_PUBLIC_SUPABASE_URL
-#   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-#
-# La base Postgres del stack es sólo para Prisma/local. Sigues usando Supabase Auth en la nube.
-# Para usar Vuestra propia Postgres (p. ej. URL de Supabase), elimina el servicio db y pon
-# DATABASE_URL / DIRECT_URL en el servicio web (o sólo DATABASE_URL igual a DIRECT_URL).
-
 services:
-  db:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: canopy
-      POSTGRES_PASSWORD: canopy
-      POSTGRES_DB: canopy
-    volumes:
-      - postgres_canopy:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U canopy -d canopy"]
-      interval: 3s
-      timeout: 5s
-      retries: 15
-
   web:
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:?Definir NEXT_PUBLIC_SUPABASE_URL en .env}
-        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:?Definir NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY en .env}
+        # Docker Compose inyectará estos valores si están presentes en tu entorno o en el archivo .env
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:-}
     restart: unless-stopped
+    # Pasamos ambos archivos de entorno al contenedor en tiempo de ejecución
     env_file:
       - .env
+      - .env.local
     environment:
-      # Apuntar Prisma/pg al Postgres del Compose (prioridad sobre valores en env_file si estaban repetidos para local).
-      DATABASE_URL: postgresql://canopy:canopy@db:5432/canopy
-      DIRECT_URL: postgresql://canopy:canopy@db:5432/canopy
       NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: "1"
     ports:
       - "3000:3000"
-    depends_on:
-      db:
-        condition: service_healthy
-
-volumes:
-  postgres_canopy:
