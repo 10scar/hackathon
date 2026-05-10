@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
-import "./canopy-landing.css";
 
 const landingSerif = Cormorant_Garamond({
   subsets: ["latin"],
