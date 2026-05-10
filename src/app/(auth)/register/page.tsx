@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { signup } from "@/app/auth/actions";
@@ -23,7 +25,10 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form action={signup} className="flex flex-col gap-5">
+          <form action={async (formData) => {
+            const res = await signup(formData);
+            if (res?.error) alert(res.error);
+          }} className="flex flex-col gap-5">
             <div>
               <label className="block text-sm font-medium text-text-main mb-1.5" htmlFor="empresa">
                 Nombre de la Empresa
