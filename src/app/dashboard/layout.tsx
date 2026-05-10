@@ -5,6 +5,8 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import { RunAnalysisButton } from "./_components/run-analysis-button";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
   children,
 }: {
