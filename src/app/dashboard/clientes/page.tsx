@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 
 export default async function ClientesPage() {
   const supabase = await createClient();
@@ -36,9 +37,17 @@ export default async function ClientesPage() {
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col gap-8 font-sans">
-      <div className="flex flex-col gap-2">
-        <h2 className="font-display font-medium text-4xl text-ink">Mis Clientes</h2>
-        <p className="text-ink-60">Lista operativa de cuentas monitoreadas.</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-2">
+          <h2 className="font-display font-medium text-4xl text-ink">Mis Clientes</h2>
+          <p className="text-ink-60">Lista operativa de cuentas monitoreadas.</p>
+        </div>
+        <Link
+          href="/dashboard/clientes/nuevo"
+          className="inline-flex justify-center shrink-0 px-5 py-2.5 rounded-full bg-moss text-white-warm text-sm font-medium hover:bg-moss-lt shadow-btn-primary transition-colors w-fit"
+        >
+          Nuevo cliente
+        </Link>
       </div>
 
       <div className="bg-white-warm rounded-2xl shadow-card border border-ink-20 overflow-hidden">
@@ -96,9 +105,12 @@ export default async function ClientesPage() {
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="text-moss hover:text-moss-lt font-medium text-sm transition-colors border-b border-transparent hover:border-moss-lt">
-                      Ver Detalles
-                    </button>
+                    <Link
+                      href={`/dashboard/clientes/${cliente.id}`}
+                      className="text-moss hover:text-moss-lt font-medium text-sm transition-colors border-b border-transparent hover:border-moss-lt inline-block"
+                    >
+                      Ver detalles
+                    </Link>
                   </td>
                 </tr>
               )

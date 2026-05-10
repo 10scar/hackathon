@@ -22,6 +22,15 @@ export default async function DashboardLayout({
     include: { empresa: true }
   });
 
+  const pendingAlertas = dbUser
+    ? await prisma.alertaIntervencion.count({
+        where: {
+          estado: "PENDIENTE",
+          cliente: { empresa_id: dbUser.empresa_id },
+        },
+      })
+    : 0;
+
   return (
     <div className="flex h-screen bg-cream font-sans">
       {/* Sidebar */}
@@ -36,14 +45,23 @@ export default async function DashboardLayout({
         <div className="p-4 flex-1 mt-4">
           <nav className="flex flex-col gap-2">
             <Link href="/dashboard" className="px-4 py-3 rounded-lg text-cream-80 hover:bg-cream/10 hover:text-cream transition-colors font-medium text-sm">
-              Vista Gerencial
+              Vista gerencial
             </Link>
             <Link href="/dashboard/clientes" className="px-4 py-3 rounded-lg text-cream-80 hover:bg-cream/10 hover:text-cream transition-colors font-medium text-sm">
-              Mis Clientes
+              Mis clientes
+            </Link>
+            <Link href="/dashboard/equipo" className="px-4 py-3 rounded-lg text-cream-80 hover:bg-cream/10 hover:text-cream transition-colors font-medium text-sm">
+              Equipo
             </Link>
             <Link href="/dashboard/alertas" className="px-4 py-3 rounded-lg text-cream-80 hover:bg-cream/10 hover:text-cream transition-colors font-medium text-sm flex justify-between items-center">
-              Alertas Activas
-              <span className="bg-risk-accent text-white-warm text-xs font-bold px-2 py-0.5 rounded-full">2</span>
+              Alertas activas
+              {pendingAlertas > 0 ? (
+                <span className="bg-risk-accent text-white-warm text-xs font-bold px-2 py-0.5 rounded-full">
+                  {pendingAlertas}
+                </span>
+              ) : (
+                <span className="text-cream/40 text-xs font-medium">0</span>
+              )}
             </Link>
           </nav>
         </div>
@@ -55,7 +73,7 @@ export default async function DashboardLayout({
              </div>
              <div className="overflow-hidden">
                <p className="text-cream font-medium truncate">{dbUser?.nombre}</p>
-               <p className="text-leaf-lt text-xs truncate">{dbUser?.empresa.nombre}</p>
+               <p className="text-leaf-lt text-xs truncate">{dbUser?.empresa?.nombre}</p>
              </div>
           </div>
         </div>
