@@ -25,7 +25,9 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <form action={async (formData) => {
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
             const res = await signup(formData);
             if (res?.error) alert(res.error);
           }} className="flex flex-col gap-5">
