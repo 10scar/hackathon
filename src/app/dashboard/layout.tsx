@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
+import { RunAnalysisButton } from "./_components/run-analysis-button";
 
 export default async function DashboardLayout({
   children,
@@ -88,9 +89,7 @@ export default async function DashboardLayout({
           </h1>
           {/* Quick actions for Demo */}
           <div className="flex items-center gap-4">
-            <button className="px-4 py-2 bg-white-warm text-moss text-sm font-medium border border-ink-20 rounded-full hover:bg-sand transition-colors shadow-sm">
-               ⚡ Ejecutar Análisis (Demo)
-            </button>
+            <RunAnalysisButton />
             <form action="/auth/signout" method="post">
               <button className="text-ink-60 hover:text-rust transition-colors text-sm font-medium border border-transparent hover:border-rust/20 px-3 py-1.5 rounded-md">
                 Cerrar Sesión
