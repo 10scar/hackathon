@@ -1,22 +1,26 @@
 import type { Metadata } from "next";
-import { Montserrat, Roboto } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
+import "./canopy-landing.css";
 
-const roboto = Roboto({
-  weight: ["400", "500", "700"],
+const landingSerif = Cormorant_Garamond({
   subsets: ["latin"],
-  variable: "--font-roboto",
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-landing-serif",
 });
 
-const montserrat = Montserrat({
-  weight: ["600", "700"],
+const landingSans = DM_Sans({
   subsets: ["latin"],
-  variable: "--font-montserrat",
+  weight: ["300", "400", "500"],
+  style: ["normal", "italic"],
+  variable: "--font-landing-sans",
 });
 
 export const metadata: Metadata = {
-  title: "Canopy",
-  description: "Agente inteligente de retención de clientes.",
+  title: "Canopy — Detecta. Entiende. Retiene.",
+  description:
+    "Agente de retención inteligente. Lee señales de uso, tickets y silencio antes de que sea tarde.",
 };
 
 export default function RootLayout({
@@ -27,9 +31,9 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${roboto.variable} ${montserrat.variable} h-full antialiased`}
+      className={`${landingSerif.variable} ${landingSans.variable} h-full scroll-smooth antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full">{children}</body>
     </html>
   );
 }
