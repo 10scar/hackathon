@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { login } from "@/app/auth/actions";
@@ -21,7 +23,10 @@ export default function LoginPage() {
             <p className="text-text-muted mt-2 text-center">Bienvenido de vuelta a Canopy</p>
           </div>
 
-          <form action={login} className="flex flex-col gap-5">
+          <form action={async (formData) => {
+            const res = await login(formData);
+            if (res?.error) alert(res.error);
+          }} className="flex flex-col gap-5">
             <div>
               <label className="block text-sm font-medium text-text-main mb-1.5" htmlFor="email">
                 Correo Electrónico
