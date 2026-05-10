@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 
 export default async function ClientesPage() {
   const supabase = await createClient();
@@ -35,51 +36,59 @@ export default async function ClientesPage() {
   });
 
   return (
-    <div className="max-w-6xl mx-auto flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <h2 className="font-montserrat font-bold text-3xl text-secondary">Mis Clientes</h2>
-        <p className="text-text-muted">Lista operativa de cuentas monitoreadas.</p>
+    <div className="max-w-6xl mx-auto flex flex-col gap-8 font-sans">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-2">
+          <h2 className="font-display font-medium text-4xl text-ink">Mis Clientes</h2>
+          <p className="text-ink-60">Lista operativa de cuentas monitoreadas.</p>
+        </div>
+        <Link
+          href="/dashboard/clientes/nuevo"
+          className="inline-flex justify-center shrink-0 px-5 py-2.5 rounded-full bg-moss text-white-warm text-sm font-medium hover:bg-moss-lt shadow-btn-primary transition-colors w-fit"
+        >
+          Nuevo cliente
+        </Link>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
+      <div className="bg-white-warm rounded-2xl shadow-card border border-ink-20 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-surface border-b border-border">
-              <th className="px-6 py-4 font-semibold text-sm text-secondary">Cliente</th>
-              <th className="px-6 py-4 font-semibold text-sm text-secondary">MRR</th>
-              <th className="px-6 py-4 font-semibold text-sm text-secondary">Renovación</th>
-              <th className="px-6 py-4 font-semibold text-sm text-secondary">Health Score</th>
-              <th className="px-6 py-4 font-semibold text-sm text-secondary">Alertas</th>
-              <th className="px-6 py-4 font-semibold text-sm text-secondary text-right">Acción</th>
+            <tr className="bg-sand border-b border-ink-20">
+              <th className="px-6 py-4 font-medium text-sm text-ink-60 uppercase tracking-wider">Cliente</th>
+              <th className="px-6 py-4 font-medium text-sm text-ink-60 uppercase tracking-wider">MRR</th>
+              <th className="px-6 py-4 font-medium text-sm text-ink-60 uppercase tracking-wider">Renovación</th>
+              <th className="px-6 py-4 font-medium text-sm text-ink-60 uppercase tracking-wider">Health Score</th>
+              <th className="px-6 py-4 font-medium text-sm text-ink-60 uppercase tracking-wider">Alertas</th>
+              <th className="px-6 py-4 font-medium text-sm text-ink-60 uppercase tracking-wider text-right">Acción</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody className="divide-y divide-ink-20">
             {clientesOrdenados.map((cliente) => {
               const score = cliente.health_scores[0]?.score || 100;
               const hasAlerts = cliente.alertas.length > 0;
               const isLinea2 = cliente.alertas.some(a => a.linea_deteccion === 'LINEA_2');
 
               return (
-                <tr key={cliente.id} className="hover:bg-surface/50 transition-colors">
+                <tr key={cliente.id} className="hover:bg-cream transition-colors">
                   <td className="px-6 py-4">
-                    <p className="font-semibold text-text-main">{cliente.nombre}</p>
-                    <p className="text-xs text-text-muted">{cliente.etapa_ciclo}</p>
+                    <p className="font-medium text-ink">{cliente.nombre}</p>
+                    <p className="text-xs text-ink-60">{cliente.etapa_ciclo}</p>
                   </td>
-                  <td className="px-6 py-4 text-text-main font-medium">
+                  <td className="px-6 py-4 text-ink font-medium">
                     ${Number(cliente.mrr).toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 text-text-muted text-sm">
+                  <td className="px-6 py-4 text-ink-60 text-sm">
                     {cliente.dias_para_renovacion} días
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <span className={`font-bold ${score <= 45 ? 'text-error' : score <= 75 ? 'text-warning' : 'text-primary'}`}>
+                      <span className={`font-bold ${score <= 45 ? 'text-rust' : score <= 75 ? 'text-moss' : 'text-leaf'}`}>
                         {score}
                       </span>
                       {/* Mini barra */}
-                      <div className="w-16 h-2 bg-border rounded-full overflow-hidden">
+                      <div className="w-16 h-2 bg-sand rounded-full overflow-hidden">
                         <div 
-                          className={`h-full ${score <= 45 ? 'bg-error' : score <= 75 ? 'bg-warning' : 'bg-primary'}`}
+                          className={`h-full ${score <= 45 ? 'bg-rust' : score <= 75 ? 'bg-moss' : 'bg-leaf'}`}
                           style={{ width: `${score}%` }}
                         ></div>
                       </div>
@@ -87,18 +96,21 @@ export default async function ClientesPage() {
                   </td>
                   <td className="px-6 py-4">
                     {hasAlerts ? (
-                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${isLinea2 ? 'bg-error text-white' : 'bg-warning/20 text-warning'}`}>
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${isLinea2 ? 'bg-risk-accent text-white-warm' : 'bg-rust/10 text-rust border border-rust/20'}`}>
                         <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
                         {isLinea2 ? 'Crítica' : 'Tendencia'}
                       </span>
                     ) : (
-                      <span className="text-text-muted text-sm">Ninguna</span>
+                      <span className="text-ink-60 text-sm">Ninguna</span>
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="text-primary hover:text-secondary font-semibold text-sm transition-colors">
-                      Ver Detalles
-                    </button>
+                    <Link
+                      href={`/dashboard/clientes/${cliente.id}`}
+                      className="text-moss hover:text-moss-lt font-medium text-sm transition-colors border-b border-transparent hover:border-moss-lt inline-block"
+                    >
+                      Ver detalles
+                    </Link>
                   </td>
                 </tr>
               )

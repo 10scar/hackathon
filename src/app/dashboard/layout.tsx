@@ -22,40 +22,58 @@ export default async function DashboardLayout({
     include: { empresa: true }
   });
 
+  const pendingAlertas = dbUser
+    ? await prisma.alertaIntervencion.count({
+        where: {
+          estado: "PENDIENTE",
+          cliente: { empresa_id: dbUser.empresa_id },
+        },
+      })
+    : 0;
+
   return (
-    <div className="flex h-screen bg-surface">
+    <div className="flex h-screen bg-cream font-sans">
       {/* Sidebar */}
-      <aside className="w-64 bg-secondary flex flex-col shadow-xl z-20">
-        <div className="p-6 flex items-center gap-3 border-b border-white/10">
-          <div className="w-8 h-8 relative bg-white rounded-full p-1">
-             <Image src="/logo.png" alt="Canopy" fill className="object-contain" />
+      <aside className="w-64 bg-ink flex flex-col shadow-xl z-20 text-cream-80">
+        <div className="p-6 flex items-center gap-3 border-b border-cream/10">
+          <div className="w-8 h-8 relative bg-white-warm rounded-full p-1">
+             <Image src="/logo.png" alt="Canopy" fill sizes="32px" className="object-contain" />
           </div>
-          <span className="font-montserrat font-bold text-xl text-white">Canopy</span>
+          <span className="font-display font-medium text-2xl text-cream">Canopy</span>
         </div>
         
         <div className="p-4 flex-1 mt-4">
           <nav className="flex flex-col gap-2">
-            <Link href="/dashboard" className="px-4 py-3 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors font-medium text-sm">
-              Vista Gerencial
+            <Link href="/dashboard" className="px-4 py-3 rounded-lg text-cream-80 hover:bg-cream/10 hover:text-cream transition-colors font-medium text-sm">
+              Vista gerencial
             </Link>
-            <Link href="/dashboard/clientes" className="px-4 py-3 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors font-medium text-sm">
-              Mis Clientes
+            <Link href="/dashboard/clientes" className="px-4 py-3 rounded-lg text-cream-80 hover:bg-cream/10 hover:text-cream transition-colors font-medium text-sm">
+              Mis clientes
             </Link>
-            <Link href="/dashboard/alertas" className="px-4 py-3 rounded-lg text-white/80 hover:bg-white/10 hover:text-white transition-colors font-medium text-sm flex justify-between items-center">
-              Alertas Activas
-              <span className="bg-error text-white text-xs font-bold px-2 py-0.5 rounded-full">2</span>
+            <Link href="/dashboard/equipo" className="px-4 py-3 rounded-lg text-cream-80 hover:bg-cream/10 hover:text-cream transition-colors font-medium text-sm">
+              Equipo
+            </Link>
+            <Link href="/dashboard/alertas" className="px-4 py-3 rounded-lg text-cream-80 hover:bg-cream/10 hover:text-cream transition-colors font-medium text-sm flex justify-between items-center">
+              Alertas activas
+              {pendingAlertas > 0 ? (
+                <span className="bg-risk-accent text-white-warm text-xs font-bold px-2 py-0.5 rounded-full">
+                  {pendingAlertas}
+                </span>
+              ) : (
+                <span className="text-cream/40 text-xs font-medium">0</span>
+              )}
             </Link>
           </nav>
         </div>
 
-        <div className="p-6 border-t border-white/10 text-sm">
+        <div className="p-6 border-t border-cream/10 text-sm">
           <div className="flex items-center gap-3">
-             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold shadow-inner">
+             <div className="w-10 h-10 bg-moss rounded-full flex items-center justify-center text-white-warm font-bold shadow-inner">
                {dbUser?.nombre.charAt(0).toUpperCase() || "U"}
              </div>
              <div className="overflow-hidden">
-               <p className="text-white font-semibold truncate">{dbUser?.nombre}</p>
-               <p className="text-primary text-xs truncate">{dbUser?.empresa.nombre}</p>
+               <p className="text-cream font-medium truncate">{dbUser?.nombre}</p>
+               <p className="text-leaf-lt text-xs truncate">{dbUser?.empresa?.nombre}</p>
              </div>
           </div>
         </div>
@@ -64,17 +82,17 @@ export default async function DashboardLayout({
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="h-20 bg-white border-b border-border px-8 flex items-center justify-between shadow-sm z-10">
-          <h1 className="font-montserrat font-bold text-2xl text-secondary">
+        <header className="h-20 bg-cream/80 backdrop-blur-md border-b border-ink-20 px-8 flex items-center justify-between z-10">
+          <h1 className="font-display font-medium text-2xl text-ink">
             Workspace
           </h1>
           {/* Quick actions for Demo */}
           <div className="flex items-center gap-4">
-            <button className="px-4 py-2 bg-surface text-primary text-sm font-semibold border border-primary/20 rounded-md hover:bg-primary/10 transition-colors shadow-sm">
+            <button className="px-4 py-2 bg-white-warm text-moss text-sm font-medium border border-ink-20 rounded-full hover:bg-sand transition-colors shadow-sm">
                ⚡ Ejecutar Análisis (Demo)
             </button>
             <form action="/auth/signout" method="post">
-              <button className="text-text-muted hover:text-error transition-colors text-sm font-medium border border-transparent hover:border-error/20 px-3 py-1.5 rounded-md">
+              <button className="text-ink-60 hover:text-rust transition-colors text-sm font-medium border border-transparent hover:border-rust/20 px-3 py-1.5 rounded-md">
                 Cerrar Sesión
               </button>
             </form>
@@ -82,7 +100,7 @@ export default async function DashboardLayout({
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto p-8 bg-background">
+        <div className="flex-1 overflow-auto p-8 bg-cream">
           {children}
         </div>
       </main>
