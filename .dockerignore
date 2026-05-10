@@ -1,0 +1,9 @@
+node_modules
+.next
+.git
+.agent
+.cursor
+**/agent-transcripts
+.env
+.env.*
+npm-debug.log*
