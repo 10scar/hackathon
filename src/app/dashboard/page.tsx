@@ -34,60 +34,60 @@ export default async function DashboardPage() {
   const mrrEnRiesgo = clientesEnRiesgo.reduce((sum, c) => sum + Number(c.mrr), 0);
 
   return (
-    <div className="max-w-6xl mx-auto flex flex-col gap-8">
+    <div className="max-w-6xl mx-auto flex flex-col gap-8 font-sans">
       <div className="flex flex-col gap-2">
-        <h2 className="font-montserrat font-bold text-3xl text-secondary">Vista Gerencial</h2>
-        <p className="text-text-muted">Resumen del estado de salud de tu cartera de clientes.</p>
+        <h2 className="font-display font-medium text-4xl text-ink">Vista Gerencial</h2>
+        <p className="text-ink-60">Resumen del estado de salud de tu cartera de clientes.</p>
       </div>
 
       {/* Tarjetas de Métricas */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-border flex flex-col">
-          <p className="text-text-muted font-semibold text-sm mb-2">MRR en Riesgo (Línea 2)</p>
-          <p className="font-montserrat font-bold text-4xl text-error mb-2">
+        <div className="bg-white-warm p-6 rounded-2xl shadow-card border border-ink-20 flex flex-col">
+          <p className="text-ink-60 font-medium text-sm mb-2 uppercase tracking-wider">MRR en Riesgo (Línea 2)</p>
+          <p className="font-display font-medium text-5xl text-rust mb-2">
             ${mrrEnRiesgo.toLocaleString()}
           </p>
-          <p className="text-xs text-text-muted">
+          <p className="text-sm text-ink-60">
             De un total de ${mrrTotal.toLocaleString()} ({((mrrEnRiesgo/mrrTotal)*100).toFixed(1)}%)
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-border flex flex-col">
-          <p className="text-text-muted font-semibold text-sm mb-2">Alertas Pendientes</p>
-          <p className="font-montserrat font-bold text-4xl text-secondary mb-2">
+        <div className="bg-white-warm p-6 rounded-2xl shadow-card border border-ink-20 flex flex-col">
+          <p className="text-ink-60 font-medium text-sm mb-2 uppercase tracking-wider">Alertas Pendientes</p>
+          <p className="font-display font-medium text-5xl text-ink mb-2">
              {clientes.flatMap(c => c.alertas).length}
           </p>
-          <p className="text-xs text-primary font-medium bg-surface inline-block px-2 py-1 rounded-md mt-auto self-start border border-primary/20">
+          <p className="text-xs text-moss font-medium bg-cream inline-block px-2 py-1 rounded-md mt-auto self-start border border-ink-20">
             Requieren atención
           </p>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-border flex flex-col">
-          <p className="text-text-muted font-semibold text-sm mb-2">Horas Ahorradas (Estimadas)</p>
-          <p className="font-montserrat font-bold text-4xl text-primary mb-2">
+        <div className="bg-white-warm p-6 rounded-2xl shadow-card border border-ink-20 flex flex-col">
+          <p className="text-ink-60 font-medium text-sm mb-2 uppercase tracking-wider">Horas Ahorradas (Estimadas)</p>
+          <p className="font-display font-medium text-5xl text-leaf mb-2">
             18h
           </p>
-          <p className="text-xs text-text-muted mt-auto">
+          <p className="text-sm text-ink-60 mt-auto">
              Gracias a la detección automática esta semana.
           </p>
         </div>
       </div>
 
       {/* Gráfico Simplificado usando CSS/Tailwind */}
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-border mt-4">
-         <h3 className="font-montserrat font-semibold text-xl text-secondary mb-6">Tendencia de Riesgo (Últimos 30 días)</h3>
-         <div className="h-64 flex items-end gap-4 border-b border-l border-border pl-4 pb-4 pt-4">
+      <div className="bg-white-warm p-8 rounded-2xl shadow-card border border-ink-20 mt-4">
+         <h3 className="font-display font-medium text-2xl text-ink mb-6">Tendencia de Riesgo (Últimos 30 días)</h3>
+         <div className="h-64 flex items-end gap-4 border-b border-l border-ink-20 pl-4 pb-4 pt-4">
            {/* Simulamos barras */}
            {[10, 20, 15, 30, 25, 40, 35, 50, 45, 60, 20, 10, 5, 12, 8].map((h, i) => (
-             <div key={i} className="flex-1 bg-surface relative group rounded-t-sm hover:bg-primary/20 transition-colors" style={{ height: `${h}%` }}>
-                {h > 40 && <div className="absolute top-0 inset-x-0 h-1 bg-error"></div>}
-                <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-secondary text-white text-xs px-2 py-1 rounded shadow-lg transition-opacity whitespace-nowrap">
+             <div key={i} className="flex-1 bg-sand relative group rounded-t-sm hover:bg-moss/20 transition-colors" style={{ height: `${h}%` }}>
+                {h > 40 && <div className="absolute top-0 inset-x-0 h-1 bg-rust"></div>}
+                <div className="opacity-0 group-hover:opacity-100 absolute -top-8 left-1/2 -translate-x-1/2 bg-ink text-white-warm text-xs px-2 py-1 rounded shadow-lg transition-opacity whitespace-nowrap">
                   Riesgo: {h}%
                 </div>
              </div>
            ))}
          </div>
-         <div className="flex justify-between text-xs text-text-muted mt-2 font-medium px-4">
+         <div className="flex justify-between text-sm text-ink-60 mt-2 font-medium px-4">
            <span>Hace 30 días</span>
            <span>Hoy</span>
          </div>
