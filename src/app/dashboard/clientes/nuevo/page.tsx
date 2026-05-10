@@ -29,7 +29,9 @@ export default function NuevoClientePage() {
       <div className="bg-white-warm rounded-2xl border border-ink-20 shadow-card p-6 md:p-8">
         <form
           className="flex flex-col gap-5"
-          action={async (formData) => {
+          onSubmit={async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
             const result = await createCliente(formData);
             if (result?.error) window.alert(result.error);
           }}

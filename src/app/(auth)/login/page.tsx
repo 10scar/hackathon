@@ -23,7 +23,9 @@ export default function LoginPage() {
             <p className="text-ink-60 mt-2 text-center font-sans">Bienvenido de vuelta a Canopy</p>
           </div>
 
-          <form action={async (formData) => {
+          <form onSubmit={async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
             const res = await login(formData);
             if (res?.error) alert(res.error);
           }} className="flex flex-col gap-5">
