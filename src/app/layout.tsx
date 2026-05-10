@@ -1,22 +1,22 @@
 import type { Metadata } from "next";
-import { Montserrat, Roboto } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 
-const roboto = Roboto({
-  weight: ["400", "500", "700"],
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
   subsets: ["latin"],
-  variable: "--font-roboto",
+  weight: ["300", "400", "500", "600"],
 });
 
-const montserrat = Montserrat({
-  weight: ["600", "700"],
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
   subsets: ["latin"],
-  variable: "--font-montserrat",
+  weight: ["300", "400", "500"],
 });
 
 export const metadata: Metadata = {
-  title: "Canopy",
-  description: "Agente inteligente de retención de clientes.",
+  title: "Canopy | Inteligencia de Retención B2B",
+  description: "Detecta. Entiende. Retiene. Plataforma de retención impulsada por IA.",
 };
 
 export default function RootLayout({
@@ -25,11 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="es"
-      className={`${roboto.variable} ${montserrat.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="es">
+      <body
+        className={`${cormorant.variable} ${dmSans.variable} min-h-full flex flex-col antialiased`}
+      >
+        {children}
+      </body>
     </html>
   );
 }
